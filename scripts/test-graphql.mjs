@@ -197,6 +197,16 @@ async function main() {
     ),
   );
 
+  const hiddenInput = await gql(
+    `mutation N { createNote(data: { title: "x", internalNotes: "probe" }) { documentId } }`,
+  );
+  check(
+    "internalNotes is absent from NoteInput",
+    hiddenInput?.errors?.some((e) =>
+      e.message.includes('"internalNotes" is not defined by type "NoteInput"'),
+    ),
+  );
+
   // 3. Computed fields
   section("Computed fields");
   const computed = await gql(
@@ -338,6 +348,10 @@ async function main() {
     sneaky?.errors?.some((e) => /archived/i.test(e.message)) &&
       !sneaky?.data?.notes,
   );
+  check(
+    "Rejection middleware surfaces extensions.code: FORBIDDEN",
+    sneaky?.errors?.some((e) => e.extensions?.code === "FORBIDDEN"),
+  );
 
   // (c) Polite query (archived: false): also rejected. The server alone
   //     controls the archived field; callers should not pass it at all.
@@ -390,6 +404,12 @@ async function main() {
       "Direct fetch of an archived note returns NotFound",
       archivedFetch?.errors?.some((e) => /not found/i.test(e.message)) &&
         !archivedFetch?.data?.note,
+    );
+    check(
+      "Single-fetch coverage surfaces extensions.code: STRAPI_NOT_FOUND_ERROR",
+      archivedFetch?.errors?.some(
+        (e) => e.extensions?.code === "STRAPI_NOT_FOUND_ERROR",
+      ),
     );
 
     const activeFetch = await gql(
