@@ -67,7 +67,7 @@ that already exist in the starter as stubs:
 - `components/nav.tsx` — Part 4 swaps the bare link list for `<AuthNav />`
   (a Server Component that reads the JWT and renders user-aware chrome).
 
-Part 4 also adds new files (`app/login/*`, `app/register/*`, `middleware.ts`,
+Part 4 also adds new files (`app/login/*`, `app/register/*`, `proxy.ts`,
 `components/auth-nav.tsx`) and a couple of new `gql` operations
 (`LOGIN`, `REGISTER`, `ME`). None of that needs to exist during Part 3.
 # strapi-nextjs-grapql-starter-for-post
